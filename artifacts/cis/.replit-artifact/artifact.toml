@@ -1,0 +1,27 @@
+kind = "web"
+previewPath = "/"
+title = "ЦИС / CIS"
+version = "1.0.0"
+id = "artifacts/cis"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 20759
+
+[services.development]
+run = "pnpm --filter @workspace/cis run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/cis", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/cis/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "20759"
+BASE_PATH = "/"
