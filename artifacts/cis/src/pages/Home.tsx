@@ -255,7 +255,7 @@ export default function Home() {
             
             {PROCESS_STEPS.map((step, idx) => (
               <div key={idx} className="relative z-10">
-                <div className="w-16 h-16 rounded-full bg-primary border border-primary-foreground/20 flex items-center justify-center text-accent font-serif text-2xl mb-6 shadow-sm">
+                <div className="w-16 h-16 rounded-full bg-primary border border-primary-foreground/20 flex items-center justify-center text-white font-serif text-2xl mb-6 shadow-sm">
                   {idx + 1}
                 </div>
                 <h4 className="text-xl font-medium mb-3">{step.title}</h4>

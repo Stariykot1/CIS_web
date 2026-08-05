@@ -37,6 +37,8 @@ type FormValues = z.infer<typeof formSchema>;
 
 export function CrisisForm() {
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -51,10 +53,25 @@ export function CrisisForm() {
     },
   });
 
-  const onSubmit = (data: FormValues) => {
-    // In a real app, this would send to an API.
-    console.log("Form submitted:", data);
-    setIsSubmitted(true);
+  const onSubmit = async (data: FormValues) => {
+    setIsSubmitting(true);
+    setSubmitError(null);
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error ?? "Ошибка отправки");
+      }
+      setIsSubmitted(true);
+    } catch (err) {
+      setSubmitError(err instanceof Error ? err.message : "Ошибка отправки. Попробуйте позже.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (isSubmitted) {
@@ -205,8 +222,11 @@ export function CrisisForm() {
             />
           </div>
 
-          <Button type="submit" size="lg" className="w-full md:w-auto">
-            Передать ситуацию в ЦИС
+          {submitError && (
+            <p className="text-sm text-destructive">{submitError}</p>
+          )}
+          <Button type="submit" size="lg" className="w-full md:w-auto" disabled={isSubmitting}>
+            {isSubmitting ? "Отправка..." : "Передать ситуацию в ЦИС"}
           </Button>
         </form>
       </Form>
